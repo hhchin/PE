@@ -1,0 +1,169 @@
+import java.util.*;
+
+public class EulerPack
+{
+    public EulerPack()
+    {
+
+    }
+    
+    public static ArrayList<Integer> genPrimeList(int n)
+    {
+        boolean [] P = new boolean [n+1];
+        Arrays.fill(P,true);
+        for(int i=2; i<P.length; i++)
+            if(P[i])
+                for(int j=2; i*j<P.length; j++)
+                    P[i*j] = false;
+        ArrayList<Integer> primes = new ArrayList<Integer> ();
+        for(int i=2; i<P.length; i++)
+            if(P[i]) primes.add(i);
+        return primes;
+    }
+   
+    public static <T> ArrayList<ArrayList<Pair<Integer>>> genFactorsList(int bound)
+    {
+        int [] rem = new int[bound+1];
+        ArrayList<ArrayList<Pair<Integer>>> factors = new ArrayList<ArrayList<Pair<Integer>>>(bound+1);
+
+        if(bound<2) return null;
+
+        for(int i=0; i<=bound; i++)
+            factors.add(new ArrayList<Pair<Integer>>());
+
+        for(int i=1; i<rem.length; i++)
+            rem[i] = i;
+
+        for(int i=2; i<=bound; i++)
+        {
+            if(rem[i] == i) //prime!
+            {
+                Pair<Integer> fac = new Pair<Integer>(i,1);
+                ArrayList<Pair<Integer>> faclist = new ArrayList<Pair<Integer>>();
+                faclist.add(fac);
+                factors.set(i, faclist);
+
+                for(int j=2; j*i<=bound; j++)
+                {
+                    int val = j*i;
+                    faclist = factors.get(val);
+                    if(faclist ==null)  faclist = new ArrayList<Pair<Integer>>();
+                    int pow = 0;
+                    while(GCDi(i,rem[val])!=1)
+                    {
+                        rem[val]/=i;
+                        pow++;
+                    }
+                    fac = new Pair<Integer>(i,pow);
+                    faclist.add(fac);
+                    factors.set(val, faclist);
+                }
+            }
+        }
+        
+
+        return factors;
+    }
+
+    public static int GCDi(int a, int b)
+    {   
+        if(a==0) return b;
+        return GCDi(b%a,a);
+    }
+
+    /*
+       public static long [][] matPowMod(long [][] A, long pow, long mod)
+       {
+       Matrix2D<long> M = new Matrix2D<long>(A);
+       Matrix2D<long> res = matPowModbySq<long>(M,pow, mod);
+       return res.M;
+       }
+
+
+       public Matrix2D<T> matPowModBySq<T>(Matrix2D<T> A, long pow, long mod)
+       {
+       if(pow==0) return A.eye();
+       if(pow==1) return A;
+       if(pow%2==0) return matPowModBySq(A.sqMod(mod), pow/2, mod);
+
+
+       }
+
+     */
+}
+
+class Pair<T> 
+{
+    public T x,y;
+    public Pair(T x, T y)
+    {
+        this.x = x;
+        this.y = y;
+    }
+
+    public T get(int pos)
+    {
+        if(pos==0) return x;
+        return y;
+    }
+
+    public String toString()
+    {
+        return "("+x+","+y+")";
+    }
+}
+
+/*
+   static class Matrix2D<T>
+   {
+   public T [][] M;
+   public int row,col;
+
+   public Matrix2D(T [][] m)
+   {
+   this.M = M;
+   row = M.length;
+   col = M[0].length;
+   }
+
+   public Matrix2D<T> eye()
+   {
+   T [][] e = new T[row][col];
+   for(int i=0; i< Math.min(row,col); i++)
+   e[i] = (T)1;
+   return new Matrix2D<T>(e);
+   }
+
+
+
+   public Matrix2D<T> sqMod(T mod)
+   {
+   return multMod(M, mod);
+   }
+
+   public Matrix2D<T> multMod(Matrix2D<T> newM, T mod)
+   {
+   int r1 = M.length;            
+   int c1 = M[0].length;            
+   int r2 = newM.length;            
+   int c2 = newM[0].length;            
+   T [][] res = new T[r1][c2];
+
+   for(int i=0; i<r1; i++)
+   for(int j=0; j<c2; j++)
+   {
+   long accum = 0L;
+   for(int c=0; c<c1; c++)
+   for(int r=0; r<r2; r++)
+   {
+   accum+= (M[i][c]*newM.M[r][j])%mod;
+   accum = accum % mod;
+   }
+   res[i][j] = accum;
+   }
+
+   return new Matrix2D<T>(res);
+   }
+
+   }*/
+
